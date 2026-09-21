@@ -13,7 +13,15 @@
 # limitations under the License.
 
 import warnings
-from typing import TYPE_CHECKING, Any, NotRequired, Optional, TypedDict, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    NotRequired,
+    Optional,
+    TypedDict,
+    TypeVar,
+)
 
 import torch
 from pydantic import BaseModel, Field
@@ -1702,6 +1710,7 @@ class MPOLossFn(PreferenceLossFn):
 
 class DistillationLossConfig(BaseModel, extra="allow"):
     kl_type: str = "mixed"
+    sampled_token_reduction: Literal["mean", "sum"] = "mean"
     mixed_kl_weight: float = 0.5
     zero_outside_topk: bool = False
 
@@ -1711,8 +1720,70 @@ class DistillationLossDataDict(TypedDict):
     input_lengths: torch.Tensor
     token_mask: torch.Tensor
     sample_mask: torch.Tensor
-    teacher_topk_logits: torch.Tensor
-    teacher_topk_indices: torch.Tensor
+    teacher_topk_logits: NotRequired[torch.Tensor]
+    teacher_topk_indices: NotRequired[torch.Tensor]
+    generation_logprobs: NotRequired[torch.Tensor]
+    teacher_logprobs: NotRequired[torch.Tensor]
+
+
+class SampledReverseKLLossFn(LossFunction):
+    """Unclipped sampled-token policy gradient with detached teacher advantages."""
+
+    loss_type = LossType.TOKEN_LEVEL
+    input_type = LossInputType.LOGPROB
+
+    def __init__(self, cfg: DistillationLossConfig) -> None:
+        self.reduction = cfg.sampled_token_reduction
+        self.metric_normalizations = {
+            key: MetricNormalizer.TOKENS
+            for key in (
+                "loss",
+                "teacher_kl",
+                "importance_ratio",
+                "rollout_logprob_abs_diff",
+            )
+        }
+        self.metric_normalizations.update(
+            {
+                "num_unmasked_tokens": MetricNormalizer.NONE,
+                "num_valid_samples": MetricNormalizer.NONE,
+            }
+        )
+
+    def __call__(
+        self,
+        next_token_logprobs: torch.Tensor,
+        data: BatchedDataDict[Any],
+        global_valid_seqs: torch.Tensor | None,
+        global_valid_toks: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
+        mask = data["token_mask"][:, 1:] * data["sample_mask"].unsqueeze(-1)
+        active = mask != 0
+        current = torch.where(active, next_token_logprobs, 0.0)
+        sampled = torch.where(active, data["generation_logprobs"][:, 1:].detach(), 0.0)
+        teacher = torch.where(active, data["teacher_logprobs"][:, 1:].detach(), 0.0)
+        advantage = teacher - sampled
+        ratio = torch.exp(current - sampled)
+        per_token_loss = -ratio * advantage
+        loss_sum = (per_token_loss * mask).sum()
+        loss_mean = loss_sum / global_valid_toks
+        loss = loss_sum if self.reduction == "sum" else loss_mean
+        if not torch.isfinite(loss):
+            raise ValueError("Nonfinite sampled reverse-KL loss")
+        return loss, {
+            "loss": loss_mean.detach().item(),
+            "teacher_kl": (
+                ((sampled - teacher) * mask).sum() / global_valid_toks
+            ).item(),
+            "importance_ratio": (
+                (ratio.detach() * mask).sum() / global_valid_toks
+            ).item(),
+            "rollout_logprob_abs_diff": (
+                ((current.detach() - sampled).abs() * mask).sum() / global_valid_toks
+            ).item(),
+            "num_unmasked_tokens": mask.sum().item(),
+            "num_valid_samples": data["sample_mask"].sum().item(),
+        }
 
 
 class DistillationLossFn(LossFunction):

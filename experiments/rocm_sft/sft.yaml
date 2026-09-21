@@ -1,0 +1,38 @@
+defaults: ../../examples/configs/sft.yaml
+sft:
+  max_num_steps: 10
+  max_num_epochs: 3
+  val_period: 5
+  val_batches: 2
+  val_global_batch_size: 4
+  val_micro_batch_size: 1
+  val_at_start: true
+  val_at_end: true
+policy:
+  model_name: Qwen/Qwen3-1.7B
+  train_global_batch_size: 4
+  train_micro_batch_size: 1
+  max_total_sequence_length: 256
+  dtensor_cfg:
+    _v2: false
+  optimizer:
+    kwargs:
+      lr: 0.00005
+checkpointing:
+  checkpoint_dir: experiments/rocm_sft/checkpoints
+  save_period: 5
+  keep_top_k: 1
+data:
+  train:
+    dataset_name: ResponseDataset
+    data_path: experiments/rocm_sft/train.jsonl
+    split: train
+  validation:
+    dataset_name: ResponseDataset
+    data_path: experiments/rocm_sft/validation.jsonl
+    split: train
+logger:
+  log_dir: experiments/rocm_sft/logs
+  wandb_enabled: false
+  tensorboard_enabled: false
+  monitor_gpus: false

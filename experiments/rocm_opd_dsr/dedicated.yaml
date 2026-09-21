@@ -1,0 +1,13 @@
+defaults: packed.yaml
+policy:
+  generation:
+    colocated:
+      enabled: false
+      resources:
+        num_nodes: 1
+        gpus_per_node: 2
+    vllm_cfg:
+      gpu_memory_utilization: 0.4
+logger:
+  wandb:
+    group: nemo-rocm-dedicated

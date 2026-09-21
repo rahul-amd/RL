@@ -18,6 +18,7 @@ import socket
 from typing import Generator
 
 import pynvml
+import torch
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,10 @@ def device_id_to_physical_device_id(device_id: int) -> int:
 
 
 def get_device_uuid(device_idx: int) -> str:
-    """Get the UUID of a CUDA device using NVML."""
+    """Get a device UUID through the active GPU runtime."""
+    if torch.version.hip is not None:
+        return str(torch.cuda.get_device_properties(device_idx).uuid)
+
     # Convert logical device index to physical device index
     global_device_idx = device_id_to_physical_device_id(device_idx)
 
@@ -82,7 +86,10 @@ def get_device_uuid(device_idx: int) -> str:
 
 
 def get_free_memory_bytes(device_idx: int) -> float:
-    """Get the free memory of a CUDA device in bytes using NVML."""
+    """Get free device memory in bytes through the active GPU runtime."""
+    if torch.version.hip is not None:
+        return torch.cuda.mem_get_info(device_idx)[0]
+
     global_device_idx = device_id_to_physical_device_id(device_idx)
     with nvml_context():
         try:
@@ -102,8 +109,6 @@ def _resolve_device_id(device_id=None):
     if device_id is not None:
         return int(device_id)
     try:
-        import torch
-
         if torch.cuda.is_initialized():
             return torch.cuda.current_device()
     except Exception:
@@ -191,8 +196,6 @@ def log_gpu_memory_diagnostics(
     pt_allocated = "N/A"
     pt_reserved = "N/A"
     try:
-        import torch
-
         if torch.cuda.is_initialized():
             pt_allocated = (
                 f"{torch.cuda.memory_allocated(logical_dev) / (1024**2):.1f}MB"

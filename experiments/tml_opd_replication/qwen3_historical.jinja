@@ -1,0 +1,11 @@
+{%- for message in messages -%}
+{%- if not loop.first %}{{ '\n' }}{% endif -%}
+{{- '<|im_start|>' + message['role'] + '\n' -}}
+{%- if message['role'] == 'assistant' and '<think>' not in message['content'] -%}
+{{- '<think>\n' -}}
+{%- endif -%}
+{{- message['content'] + '<|im_end|>' -}}
+{%- endfor -%}
+{%- if add_generation_prompt -%}
+{{- '\n<|im_start|>assistant\n<think>\n' -}}
+{%- endif -%}

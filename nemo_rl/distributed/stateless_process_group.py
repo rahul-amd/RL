@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import ctypes
 import pickle
 import sys
 import threading
 import types
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import torch
-from nccl.core import SUM
-from nccl.core.communicator import Communicator
-from nccl.core.utils import UniqueId, get_unique_id
+
+if TYPE_CHECKING or not torch.version.hip:
+    from nccl.core import SUM
+    from nccl.core.communicator import Communicator
+    from nccl.core.utils import UniqueId, get_unique_id
 
 from nemo_rl.distributed.refit_watchdog import RefitAborted
 
@@ -97,6 +101,7 @@ class StatelessProcessGroup:
         # Declared here rather than sprung into existence by init_nccl_communicator, so
         # abort() can tell "never initialized" from "initialized" without hasattr.
         self.nccl_communicator: Optional[Communicator] = None
+        self._rocm_communicator: Optional[torch.distributed.ProcessGroupNCCL] = None
         # Whether this group was aborted, as opposed to never built. Both leave
         # nccl_communicator None, but they are different failures and the collectives
         # below have to report them differently -- see broadcast().
@@ -141,6 +146,14 @@ class StatelessProcessGroup:
         Imported locally to keep this module free of a ``weight_sync`` dependency at module
         scope.
         """
+        if torch.version.hip:
+            communicator, self._rocm_communicator = self._rocm_communicator, None
+            self.tcp_store = None
+            self._aborted = True
+            if communicator is not None:
+                communicator.abort()
+            return
+
         # Before the parent: once nccl_communicator is None the cache keys derived from it
         # cannot be recovered, and the children would be stranded as well as un-aborted.
         from nemo_rl.weight_sync.xferdtensor_python import (
@@ -173,6 +186,21 @@ class StatelessProcessGroup:
                 "StatelessProcessGroup has no rendezvous store: the group was aborted. "
                 "Construct a new one rather than re-initializing this."
             )
+
+        if torch.version.hip:
+            if peer != "nemo":
+                raise NotImplementedError(
+                    "The ROCm process group requires NeMo peers on all ranks."
+                )
+            with torch.cuda.device(device):
+                self._rocm_communicator = torch.distributed.ProcessGroupNCCL(
+                    self.tcp_store, self.rank, self.world_size
+                )
+                data = torch.full((1,), float(self.rank == 0), device=device)
+                self.broadcast(data, 0)
+                torch.cuda.current_stream().synchronize()
+                assert torch.allclose(data, torch.ones_like(data))
+            return
 
         if self.rank == 0:
             unique_id = get_unique_id()
@@ -227,6 +255,20 @@ class StatelessProcessGroup:
     def broadcast(
         self, tensor: torch.Tensor, src: int, stream: Optional[torch.cuda.Stream] = None
     ):
+        if torch.version.hip:
+            communicator = self._rocm_communicator
+            if communicator is None:
+                if self._aborted:
+                    raise RefitAborted("The ROCm refit process group was aborted.")
+                raise RuntimeError("The ROCm refit process group was not initialized.")
+            if stream is None:
+                stream = torch.cuda.current_stream()
+            options = torch.distributed.BroadcastOptions()
+            options.rootRank = src
+            with torch.cuda.stream(stream):
+                communicator.broadcast([tensor], options).wait()
+            return
+
         # Snapshotted, not read twice. The watchdog thread nulls this field from under
         # us, so a check-then-call on the attribute can pass the check and then raise
         # AttributeError: 'NoneType' has no attribute 'broadcast'.

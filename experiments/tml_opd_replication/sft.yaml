@@ -1,0 +1,72 @@
+defaults: ../../examples/configs/sft.yaml
+sft:
+  max_num_steps: 3000
+  max_num_epochs: 1
+  val_period: 0
+  val_at_start: false
+  val_at_end: false
+  seed: 42
+policy:
+  initialization_seed: 42
+  model_name: /shared_silo/scratch/hf_cache/hub/models--Qwen--Qwen3-8B-Base/snapshots/49e3418fbbbca6ecbdf9608b4d22e5a407081db4
+  tokenizer:
+    chat_template: experiments/tml_opd_replication/qwen3_historical.jinja
+  train_global_batch_size: 128
+  train_micro_batch_size: 1
+  max_total_sequence_length: 16384
+  max_grad_norm: .inf
+  dtensor_cfg:
+    _v2: true
+    activation_checkpointing: false
+    automodel_kwargs:
+      force_hf: true
+    lora_cfg:
+      enabled: true
+      match_all_linear: false
+      target_modules: ['*.q_proj', '*.k_proj', '*.v_proj', '*.o_proj', '*.gate_proj', '*.up_proj', '*.down_proj', lm_head]
+      dim: 128
+      alpha: 32
+      dropout: 0.0
+      lora_A_init: uniform
+      use_triton: false
+  sequence_packing:
+    enabled: true
+    train_mb_tokens: 16384
+  optimizer:
+    name: torch.optim.AdamW
+    kwargs:
+      lr: 0.001
+      weight_decay: 0.0
+      betas: [0.9, 0.95]
+      eps: 1.0e-8
+  scheduler:
+    - name: torch.optim.lr_scheduler.LinearLR
+      kwargs:
+        start_factor: 1.0
+        end_factor: 0.0
+        total_iters: 3000
+    - milestones: []
+data:
+  train:
+    dataset_name: open-thoughts/OpenThoughts3-1.2M
+  shuffle: false
+  num_workers: 2
+  validation: null
+  tokenized_path: experiments/tml_opd_replication/data/openthoughts3_seed0
+  sample_limit: null
+  require_complete: true
+checkpointing:
+  checkpoint_dir: experiments/tml_opd_replication/checkpoints/local_sft
+  save_period: 5
+  metric_name: train:loss
+  keep_top_k: null
+logger:
+  log_dir: experiments/tml_opd_replication/logs/sft
+  wandb_enabled: true
+  tensorboard_enabled: false
+  monitor_gpus: false
+  wandb:
+    project: opd-tests
+    name: tml-qwen3-8b-sft-r128
+    id: tml-sft-r128
+    resume: allow

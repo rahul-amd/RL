@@ -1,0 +1,33 @@
+defaults: distillation.yaml
+distillation:
+  topk_logits_k: 20
+  val_at_start: false
+policy:
+  generation:
+    vllm_kwargs:
+      max_num_seqs: 64
+  dynamic_batching:
+    enabled: false
+  sequence_packing:
+    enabled: true
+    train_mb_tokens: 36864
+    logprob_mb_tokens: 36864
+teacher:
+  dynamic_batching:
+    enabled: false
+  sequence_packing:
+    enabled: true
+    train_mb_tokens: 36864
+    logprob_mb_tokens: 36864
+checkpointing:
+  save_period: 5
+  keep_top_k: 6
+logger:
+  wandb_enabled: true
+  wandb:
+    project: opd-tests
+    group: nemo-rocm-packed
+    mode: online
+
+cluster:
+  gpus_per_node: 4

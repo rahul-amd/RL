@@ -1,0 +1,6 @@
+{
+  "rows_checked": 3304,
+  "all_token_ids_equal": true,
+  "student": "Qwen/Qwen3-1.7B",
+  "enable_thinking": true
+}

@@ -1,0 +1,18 @@
+{
+  "prime_root": "/shared_silo/scratch/rahul.aralikatte@amd.com/prime-rl",
+  "instruction": "Solve the following math problem. Explain your reasoning and put the final answer in \\boxed{}.\n\n",
+  "splits": {
+    "train": {
+      "source": "/shared_silo/scratch/rahul.aralikatte@amd.com/prime-rl/opd_val/data/dsr_q3_solvable_train/train.parquet",
+      "source_sha256": "8a85e171cc7e2cbf297c2df0f0c3b54ffd668af9722d58b49d63b299127b1243",
+      "rows": 3004,
+      "export_sha256": "24801fb455a502eb92da0544af9f64f8bbe0baa74d7cba754661db99c55a0628"
+    },
+    "validation": {
+      "source": "/shared_silo/scratch/rahul.aralikatte@amd.com/prime-rl/opd_val/data/dsr_q3_solvable_eval/train.parquet",
+      "source_sha256": "3ab17fe28f9af55bf0a85efcd1ce024088056382194d3b464d2f50345c9348e0",
+      "rows": 300,
+      "export_sha256": "1a4d689014765ed04244392ac2ca6f0c6820b537d4645f700c862dec2508eb37"
+    }
+  }
+}

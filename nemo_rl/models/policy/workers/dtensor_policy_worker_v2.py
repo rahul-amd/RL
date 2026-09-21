@@ -156,8 +156,8 @@ def _maybe_merge_lora_weight(
         if isinstance(module.lora_B.weight, DTensor)
         else module.lora_B.weight
     )
-    lora_a = lora_a.to(device=tensor.device, dtype=tensor.dtype)
-    lora_b = lora_b.to(device=tensor.device, dtype=tensor.dtype)
+    lora_a = lora_a.to(device=tensor.device, dtype=torch.float32)
+    lora_b = lora_b.to(device=tensor.device, dtype=torch.float32)
     scale = getattr(module, "scale", None)
 
     if scale is None and hasattr(module, "alpha") and hasattr(module, "dim"):
@@ -165,7 +165,7 @@ def _maybe_merge_lora_weight(
     if scale is None:
         scale = 1.0
 
-    return tensor + torch.matmul(lora_b, lora_a) * scale
+    return (tensor.float() + torch.matmul(lora_b, lora_a) * scale).to(tensor.dtype)
 
 
 def _maybe_adapt_tensor_to_hf(

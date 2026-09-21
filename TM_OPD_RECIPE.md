@@ -12,6 +12,10 @@ The pinned source is also saved locally under
 `experiments/tml_opd_replication/reference_330b73d/`.
 This run used local NeMo-RL training, not the Tinker training service.
 
+Code, experiment configurations, dependency overlays, and launch instructions are
+in [experiments/README.md](experiments/README.md). Historical artifact paths below
+refer to the original run workspace; generated data and checkpoints stay local.
+
 ## Models and datasets
 
 Experiment and artifact paths below refer to the local NeMo-RL run workspace,

@@ -1,0 +1,10 @@
+{
+  "run_id": "YOUR_RUN_ID",
+  "state_path": "experiments/tml_opd_replication/run_YOUR_RUN_ID/monitor_state.json",
+  "poll_seconds": 30,
+  "startup_seconds": 1200,
+  "stall_seconds": 1200,
+  "max_restarts_without_progress": 3,
+  "save_period": 5,
+  "target_steps": 3000
+}

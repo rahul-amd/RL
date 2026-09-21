@@ -136,3 +136,28 @@ uv lock
 | `uv sync --locked` fails | Dependency conflict or stale lockfile | Re-run `uv lock` and commit updated lock |
 | `ModuleNotFoundError` after pip install | pip installed outside uv-managed venv | Use `uv add` + `uv sync`, never bare `pip install` |
 | Docker build fails at vLLM | vLLM build time overhead | Pass `--build-arg SKIP_VLLM_BUILD=1` |
+
+
+## ROCm experiment environment
+
+The MI325X recipes and frozen package overlays live in `experiments/`; start with
+`experiments/README.md`. They reuse a ROCm container/interpreter rather than the
+root CUDA lockfile. Do not install CUDA Torch/vLLM over that environment or edit
+an existing `.venv`. Run commands with `uv run --no-project --python <interpreter>`
+inside the wrapper and retain `NEMO_RL_PY_EXECUTABLES_SYSTEM=1` for Ray workers.
+The wrapper derives its repository root; package/image/Automodel paths have
+`NRL_*` overrides documented in the setup guide. Verify imports resolve to the
+checkout being tested when reusing another checkout's dependency overlays.
+
+Generate smoke inputs with `experiments/prepare_smoke_data.py`. The historical
+renderer parity test additionally needs `prepare_reference.py`, which fetches a
+pinned, checksummed source into an ignored directory. Never commit dependencies,
+model/dataset caches, run outputs, checkpoints or credentials with these recipes.
+
+Submit Slurm jobs from the repo root on verification/normal, and use the actual
+allocated GPU count with cgroup-local device indices. Keep Ray/Triton/W&B scratch
+paths job-specific. Multi-node launchers require routable head/node addresses.
+The TML worker uses synchronous checkpoints; recovery requires complete model,
+optimizer and dataloader state plus the shared run writer lock. Dedicated vLLM
+ranks avoid the observed ROCm sleep/wake allocation failure. Validate transfers
+with `verify_rccl_group.py` before launching distributed OPD on a new stack.

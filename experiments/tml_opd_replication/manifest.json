@@ -1,0 +1,183 @@
+{
+  "target": "Historical published rank-128 LoRA reasoning reproduction; not the full-finetuning curve",
+  "reference_commit": "330b73d8d763b0f65bcf04e643cc6f082e002554",
+  "checkpoint_release_commit": "8f32fc851c",
+  "student": {
+    "base_model": "Qwen/Qwen3-8B-Base",
+    "rank": 128,
+    "continue_existing_adapter": true,
+    "checkpoint_available_locally": true,
+    "adapter_targets_alpha_dropout": "Attention + MLP + lm_head, rank128, alpha32, dropout0; see sft_recipe.json for sources and assumptions",
+    "tinker_weights_info": {
+      "base_model": "Qwen/Qwen3-8B-Base",
+      "is_lora": true,
+      "lora_rank": 128,
+      "train_unembed": true,
+      "train_mlp": true,
+      "train_attn": true
+    },
+    "published_initialization": "tinker://4a1939e6-04be-5a77-9e4e-910ccff9f27e:train:0/weights/final",
+    "initialization": "experiments/tml_opd_replication/run_49416/checkpoints/step_3000/policy/weights/model"
+  },
+  "teacher": {
+    "model": "Qwen/Qwen3-8B",
+    "frozen": true
+  },
+  "data": {
+    "dataset": "zwhe99/DeepMath-103K",
+    "split": "train",
+    "order": "Original dataset order, no shuffle in published PromptOnlyDataset",
+    "max_prompt_tokens": 1024,
+    "renderer": "Historical Qwen3Renderer, forced <think> prefill, no added DSR instruction"
+  },
+  "opd": {
+    "prompts_per_update": 512,
+    "responses_per_prompt": 4,
+    "global_responses": 2048,
+    "training_max_new_tokens": 4096,
+    "learning_rate": 0.0001,
+    "lr_schedule": "constant",
+    "adam_betas": [
+      0.9,
+      0.95
+    ],
+    "adam_epsilon": 1e-08,
+    "loss": "unclipped importance sampling with detached immediate teacher-minus-rollout logprob advantage",
+    "teacher_top_k": null,
+    "kl_penalty_coef": 1.0,
+    "kl_discount_factor": 0.0,
+    "optimizer_steps_per_rollout_batch": 1,
+    "sampling": "synchronous, current student",
+    "correctness_reward": 0.0,
+    "format_reward": 0.0,
+    "target_reported_steps": 100,
+    "full_reference_dataset_batches": "ceil(103K / 512), distinguish from reported step100 comparison",
+    "full_batch_preflight_job": 49581,
+    "active_job": null,
+    "run_id": 49581,
+    "actual_gpus": 32,
+    "monitor_state": "run_opd_49581/monitor_state.json",
+    "wandb_url": "https://wandb.ai/rahular/opd-tests/runs/tml-opd-r128-49581",
+    "completed_job": 49582,
+    "completed_steps": 100
+  },
+  "evaluation": {
+    "benchmark": "AIME 2024",
+    "reported_initial_accuracy_approx": 0.55,
+    "reported_opd_accuracy_approx": 0.65,
+    "historical_evaluation_token_budget": null,
+    "historical_repeats_and_seed": null,
+    "note": "Historical README does not specify exact evaluator or repeat count. Current 2026 rerun uses different models; do not silently transfer its eval recipe.",
+    "local_protocol": "eval_aime.py: 30 problems x32 independent samples; temperature0.6/top_p0.95/top_k20; total context32768; forced thinking; mean sample accuracy; historical eval settings unspecified.",
+    "active_jobs": [],
+    "output": "run_aime_49575",
+    "results": {
+      "sft_accuracy": 0.5458333333333333,
+      "teacher_accuracy": 0.7625,
+      "samples_per_model": 960,
+      "output": "run_aime_49575",
+      "sft_truncated_fraction": 0.18541666666666667,
+      "teacher_truncated_fraction": 0.05520833333333333
+    },
+    "opd_step20": {
+      "accuracy": 0.60625,
+      "samples": 960,
+      "output": "run_aime_49595"
+    },
+    "opd_step100": {
+      "accuracy": 0.6125,
+      "samples": 960,
+      "output": "run_aime_50155"
+    }
+  },
+  "prerequisites": [
+    "Complete local historical SFT reproduction and evaluate AIME24",
+    "Match trainable parameter subset and LoRA scaling",
+    "Verify sampled-token loss and normalization parity",
+    "Verify adapter load, training, checkpointing and inference refresh on ROCm",
+    "Resolve historical evaluation details or label deviation"
+  ],
+  "launch_status": "COMPLETE: OPD100 and both AIME24 evaluations finished. SFT54.5833%, step20 60.625%, step100 61.25%; teacher76.25%. No active jobs.",
+  "resource_revisions": {
+    "Qwen/Qwen3-8B-Base": {
+      "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
+      "last_modified": "2025-05-21T05:59:01.000Z",
+      "files": [
+        ".gitattributes",
+        "README.md",
+        "config.json",
+        "generation_config.json",
+        "merges.txt",
+        "model-00001-of-00005.safetensors",
+        "model-00002-of-00005.safetensors",
+        "model-00003-of-00005.safetensors",
+        "model-00004-of-00005.safetensors",
+        "model-00005-of-00005.safetensors",
+        "model.safetensors.index.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ]
+    },
+    "Qwen/Qwen3-8B": {
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "last_modified": "2025-07-26T03:49:13.000Z",
+      "files": [
+        ".gitattributes",
+        "LICENSE",
+        "README.md",
+        "config.json",
+        "generation_config.json",
+        "merges.txt",
+        "model-00001-of-00005.safetensors",
+        "model-00002-of-00005.safetensors",
+        "model-00003-of-00005.safetensors",
+        "model-00004-of-00005.safetensors",
+        "model-00005-of-00005.safetensors",
+        "model.safetensors.index.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ]
+    },
+    "zwhe99/DeepMath-103K": {
+      "revision": "5cf055d1fe3d7a2eb19719ac020211469736ae44",
+      "last_modified": "2025-05-29T03:37:07.000Z",
+      "files": [
+        ".gitattributes",
+        "README.md",
+        "assets/github-contamination-case.png",
+        "assets/github-data-sample.png",
+        "assets/github-difficulty.png",
+        "assets/github-domain.png",
+        "assets/github-main.png",
+        "assets/github-tsne.png",
+        "data/train-00000-of-00010.parquet",
+        "data/train-00001-of-00010.parquet",
+        "data/train-00002-of-00010.parquet",
+        "data/train-00003-of-00010.parquet",
+        "data/train-00004-of-00010.parquet",
+        "data/train-00005-of-00010.parquet",
+        "data/train-00006-of-00010.parquet",
+        "data/train-00007-of-00010.parquet",
+        "data/train-00008-of-00010.parquet",
+        "data/train-00009-of-00010.parquet"
+      ]
+    }
+  },
+  "source_sha256": {
+    "reference_330b73d/tinker_cookbook/distillation/datasets.py": "3b502809f60ac7680e9c022ff6a4bdd3184aa7a01bebf773ac43d57de50ad859",
+    "reference_330b73d/tinker_cookbook/distillation/train_on_policy.py": "73a2c45790f9a1d8efb7d76fefee23339192c65a02d70ecb9f2a7760f249e607",
+    "reference_330b73d/tinker_cookbook/recipes/distillation/README.md": "e656bc4e6977bbfe3d97991ab7b6d651921599de8f68ae38c1897f1ed36cf96c",
+    "reference_330b73d/tinker_cookbook/recipes/distillation/off_policy_reasoning.py": "612eb6a8cb64b19abdd860e92d6efb3413ac3aa2fb591203a155894b0a36e7f8",
+    "reference_330b73d/tinker_cookbook/recipes/distillation/on_policy_distillation.py": "1352ecf1b7c09b3ee7faebbfc08f7c8501b242c9cb076d412187488518347015",
+    "reference_330b73d/tinker_cookbook/renderers.py": "e16ea3a37d84e8fb90ca575ac49c3e50567aaa238606a25fbebab2582f13bdf7",
+    "reference_330b73d/tinker_cookbook/rl/data_processing.py": "07d10d7caeacf717008d157ea81a335e321ea3b7ba046d3f4926a8a8a8c68073",
+    "reference_330b73d/tinker_cookbook/rl/train.py": "c5148f7a02a171ef94f82a6718e3101177c1f8c1558da0a39b83e80b0603a7a8",
+    "reference_330b73d/tinker_cookbook/supervised/train.py": "527fae301bfe8e5c50545a6ae48fc17da44dc65236132d77c4f86c613e4830e7",
+    "reference_330b73d/tinker_cookbook/supervised/data.py": "ed5259ec9080db2bf1cdbfeee5633436fb0c87be1d3e8490e9cb6ac5310527e6",
+    "reference_330b73d/tinker_cookbook/supervised/common.py": "9b3f34be3e26c647544107e2ae5469860b9446028e92d2e6cccc4f564c735fd2",
+    "reference_330b73d/tinker_cookbook/utils/lr_scheduling.py": "00d754db3c93d70f973581117ffce7163e5e7457cd6a0c524065dec96e9e0dc1"
+  },
+  "sft_recipe": "sft_recipe.json"
+}

@@ -1,0 +1,83 @@
+{
+  "objective": "summed unclipped importance sampling with detached per-token teacher-minus-rollout advantage",
+  "tests": "4 passed: analytic KL gradient, sum/mean microbatch accumulation and nonfinite padding masks, prompt/response logprob alignment",
+  "configuration": "opd.yaml validated with MasterConfig",
+  "data": "103022 DeepMath prompts, original order, 8 truncated to1024 raw tokens",
+  "teacher_aime24": 0.7625,
+  "sft_aime24": 0.5458333333333333,
+  "next": "Monitor final AIME24 evaluation50155 (four GPUs, same960samples/protocol); compare against54.5833% SFT and60.625% OPDstep20.",
+  "failed_smoke_job": 49578,
+  "failed_smoke_cause": "relative adapter path unavailable in Ray packaged cwd; fixed absolute shared path",
+  "full_opd_started": true,
+  "smoke_job": 49579,
+  "smoke_status": "completed; exact506tensorload, twofiniteupdates, basefrozen/adapterschanged, checkpoints1and2",
+  "smoke_step_seconds": [
+    24.92,
+    19.59
+  ],
+  "smoke_importance_ratios": [
+    0.9994962513446808,
+    1.0006758887320757
+  ],
+  "smoke_logprob_abs_diffs": [
+    0.02690644483664073,
+    0.02274681394919753
+  ],
+  "resume_job": 49580,
+  "resume_status": "parameterrestoreexact;update3/auditpassed",
+  "full_batch_preflight_job": 49581,
+  "full_batch_preflight_gpus": 32,
+  "configuration_regression_tests": "2 passed",
+  "full_batch_preflight_status": "COMPLETED; two full-batch updates, initial506tensor verification on16workers, frozen base / finite changed adapter audit passed; checkpoint2 complete",
+  "continuation_job": 49582,
+  "continuation_dependency": "afterok:49581",
+  "full_batch_first_update": {
+    "seconds": 286.37558825686574,
+    "loss": 0.2556049836020975,
+    "teacher_kl": 0.2589720301948546,
+    "importance_ratio": 1.0000040768063627,
+    "rollout_logprob_abs_diff": 0.03751617162470211,
+    "valid_tokens": 8291744,
+    "checkpoint": 1
+  },
+  "full_batch_metrics": [
+    {
+      "nemo_rl/step": 1,
+      "train/loss": 0.2556049836020975,
+      "train/teacher_kl": 0.2589720301948546,
+      "train/importance_ratio": 1.0000040768063627,
+      "train/rollout_logprob_abs_diff": 0.03751617162470211,
+      "train/grad_norm": 4077405.0,
+      "timing/train/total_step_time": 286.37558825686574
+    },
+    {
+      "nemo_rl/step": 2,
+      "train/loss": 0.16120885022974107,
+      "train/teacher_kl": 0.16384320674660557,
+      "train/importance_ratio": 0.9999886030927883,
+      "train/rollout_logprob_abs_diff": 0.02857027675321433,
+      "train/grad_norm": 1385958.75,
+      "timing/train/total_step_time": 249.8094085548073
+    }
+  ],
+  "continuation_status": "COMPLETED100updates; final training W&B metrics synced",
+  "monitor": {
+    "tmux_window": "nemo-rocm:OPD-Watch",
+    "config": "run_opd_49581/monitor_config.json",
+    "state": "run_opd_49581/monitor_state.json",
+    "evaluation_steps": [
+      20,
+      100
+    ],
+    "stays_active_through_evaluation_completion": true
+  },
+  "resumed_update_metrics": {
+    "nemo_rl/step": 3,
+    "train/loss": 0.14036434959052713,
+    "train/teacher_kl": 0.14194111921460717,
+    "train/importance_ratio": 1.0000181604700629,
+    "train/rollout_logprob_abs_diff": 0.019511644865588096,
+    "train/grad_norm": 1251744.5,
+    "timing/train/total_step_time": 263.58867455273867
+  }
+}

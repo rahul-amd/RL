@@ -30,12 +30,13 @@ from nemo_rl.algorithms.loss import (
     DistillationLossConfig,
     DistillationLossDataDict,
     DistillationLossFn,
+    SampledReverseKLLossFn,
 )
 from nemo_rl.algorithms.utils import set_seed
 from nemo_rl.data import DataConfig
 from nemo_rl.data.collate_fn import rl_collate_fn
 from nemo_rl.data.datasets import AllTaskProcessedDataset
-from nemo_rl.data.interfaces import DatumSpec
+from nemo_rl.data.interfaces import DatumSpec, LLMMessageLogType
 from nemo_rl.data.llm_message_utils import (
     batched_message_log_to_flat_message,
     get_keys_from_message_log,
@@ -210,7 +211,7 @@ def setup(
     Optional[EnvironmentInterface],  # nemo_gym
     StatefulDataLoader,
     Optional[StatefulDataLoader],
-    DistillationLossFn,
+    DistillationLossFn | SampledReverseKLLossFn,
     Logger,
     CheckpointManager,
     DistillationSaveState,
@@ -622,7 +623,11 @@ def setup(
         # wait for all futures to complete
         ray.get(futures_train + futures_inference)
 
-    loss_fn = DistillationLossFn(loss_config)
+    loss_fn = (
+        SampledReverseKLLossFn(loss_config)
+        if loss_config.kl_type == "sampled_reverse"
+        else DistillationLossFn(loss_config)
+    )
 
     print("\n" + "=" * 60)
     print(" " * 18 + "SETUP COMPLETE")
@@ -648,6 +653,33 @@ def setup(
 # ===============================================================================
 
 
+def prepare_distillation_messages(
+    message_logs: list[LLMMessageLogType], *, include_sampling_logprobs: bool
+) -> None:
+    """Mask prompt tokens and align sampling probabilities with the full sequence."""
+    for message_log in message_logs:
+        for message in message_log:
+            is_response = message["role"] == "assistant"
+            message["token_loss_mask"] = (
+                torch.ones_like(message["token_ids"])
+                if is_response
+                else torch.zeros_like(message["token_ids"])
+            )
+            if include_sampling_logprobs:
+                if is_response:
+                    if (
+                        message["generation_logprobs"].shape
+                        != message["token_ids"].shape
+                    ):
+                        raise ValueError(
+                            "Sampled logprobs must align with response tokens"
+                        )
+                else:
+                    message["generation_logprobs"] = torch.zeros_like(
+                        message["token_ids"], dtype=torch.float32
+                    )
+
+
 def _distillation_train_impl(
     student_policy: ColocatablePolicyInterface,
     teacher_policy: ColocatablePolicyInterface,
@@ -655,7 +687,7 @@ def _distillation_train_impl(
     dataloader: StatefulDataLoader,
     val_dataloader: Optional[StatefulDataLoader],
     tokenizer: TokenizerType,
-    loss_fn: DistillationLossFn,
+    loss_fn: DistillationLossFn | SampledReverseKLLossFn,
     task_to_env: dict[str, EnvironmentInterface],
     val_task_to_env: Optional[dict[str, EnvironmentInterface]],
     logger: Logger,
@@ -856,16 +888,11 @@ def _distillation_train_impl(
 
                 with timer.time("data_processing"):
                     # Add loss mask and advantages to each message in LLMMessageLogType
-                    for message_log in repeated_batch["message_log"]:
-                        for message in message_log:
-                            if message["role"] == "assistant":
-                                message["token_loss_mask"] = torch.ones_like(
-                                    message["token_ids"]
-                                )
-                            else:
-                                message["token_loss_mask"] = torch.zeros_like(
-                                    message["token_ids"]
-                                )
+                    prepare_distillation_messages(
+                        repeated_batch["message_log"],
+                        include_sampling_logprobs=master_config.loss_fn.kl_type
+                        == "sampled_reverse",
+                    )
 
                     # Convert updated LLMMessageLogType to FlatMessagesType for training
                     flat_messages, input_lengths = batched_message_log_to_flat_message(
@@ -889,6 +916,10 @@ def _distillation_train_impl(
                     train_data.update(
                         flat_messages.get_multimodal_dict(as_tensors=False)
                     )
+                    if master_config.loss_fn.kl_type == "sampled_reverse":
+                        train_data["generation_logprobs"] = flat_messages[
+                            "generation_logprobs"
+                        ]
                     train_data.to("cpu")
 
                 print("▶ Preparing for teacher logprob inference...", flush=True)
@@ -912,13 +943,20 @@ def _distillation_train_impl(
                         tracer=_tracer,
                     ),
                 ):
-                    teacher_topk = teacher_policy.get_topk_logits(
-                        train_data,
-                        k=master_config.distillation.topk_logits_k,
-                        timer=timer,
-                    )
-                    train_data["teacher_topk_logits"] = teacher_topk["topk_logits"]
-                    train_data["teacher_topk_indices"] = teacher_topk["topk_indices"]
+                    if master_config.loss_fn.kl_type == "sampled_reverse":
+                        train_data["teacher_logprobs"] = teacher_policy.get_logprobs(
+                            train_data, timer=timer
+                        )["logprobs"]
+                    else:
+                        teacher_topk = teacher_policy.get_topk_logits(
+                            train_data,
+                            k=master_config.distillation.topk_logits_k,
+                            timer=timer,
+                        )
+                        train_data["teacher_topk_logits"] = teacher_topk["topk_logits"]
+                        train_data["teacher_topk_indices"] = teacher_topk[
+                            "topk_indices"
+                        ]
 
                 print("▶ Preparing for training...", flush=True)
                 with timer.time("training_prep"):
@@ -1208,7 +1246,7 @@ def distillation_train(
     dataloader: StatefulDataLoader,
     val_dataloader: Optional[StatefulDataLoader],
     tokenizer: TokenizerType,
-    loss_fn: DistillationLossFn,
+    loss_fn: DistillationLossFn | SampledReverseKLLossFn,
     task_to_env: dict[str, EnvironmentInterface],
     val_task_to_env: Optional[dict[str, EnvironmentInterface]],
     logger: Logger,

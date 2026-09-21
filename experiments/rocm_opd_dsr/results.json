@@ -1,0 +1,37 @@
+{
+  "job_id": 49144,
+  "student": "Qwen/Qwen3-1.7B",
+  "teacher": "Qwen/Qwen3-32B",
+  "top_k": 64,
+  "train_rows": 3004,
+  "held_out_rows": 300,
+  "prompt_token_parity_rows": 3304,
+  "baseline_correct": 110,
+  "baseline_samples": 128,
+  "baseline_accuracy": 0.859375,
+  "first_step_loss": 0.2076859176158905,
+  "first_step_grad_norm": 2.3737595081329346,
+  "first_step_lr": 3.000000106112566e-06,
+  "first_step_seconds": 1055.661376953125,
+  "first_step_mean_generation_tokens": 13567.484375,
+  "status": "CANCELLED after three updates; replaced by packed job 49157. No checkpoint had been saved.",
+  "resume_probe": {
+    "job_id": 49146,
+    "state": "COMPLETED",
+    "exit_code": 0,
+    "restored_step": 3,
+    "saved_step": 4,
+    "saved_consumed_samples": 16,
+    "loss": 0.04250483913347125,
+    "scope": "One-GPU smoke checkpoint restoration; not yet the full two-GPU DSR checkpoint."
+  },
+  "continuation": {
+    "job_id": 49148,
+    "dependency": "afternotok:49144",
+    "state": "CANCELLED",
+    "allowed_source_state": "TIMEOUT",
+    "walltime_hours": 48,
+    "checkpoint_directory": "experiments/rocm_opd_dsr/run_49144/checkpoints"
+  },
+  "replacement_job_id": 49157
+}

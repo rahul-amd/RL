@@ -1,0 +1,93 @@
+defaults: ../rocm_rl/distillation.yaml
+
+distillation:
+  num_prompts_per_step: 8
+  num_generations_per_prompt: 16
+  max_num_steps: 150
+  max_num_epochs: 10
+  topk_logits_k: 64
+  val_batch_size: 32
+  max_val_samples: 128
+  val_period: 25
+  val_at_start: true
+  val_at_end: true
+
+loss_fn:
+  kl_type: reverse
+
+policy:
+  model_name: Qwen/Qwen3-1.7B
+  tokenizer:
+    chat_template_kwargs:
+      enable_thinking: true
+  train_global_batch_size: 128
+  generation_batch_size: 64
+  max_total_sequence_length: 36864
+  dtensor_cfg:
+    activation_checkpointing: true
+  generation:
+    max_new_tokens: 32768
+    temperature: 1.0
+    top_p: 1.0
+    val_temperature: 1.0
+    val_top_p: 1.0
+    vllm_cfg:
+      gpu_memory_utilization: 0.6
+    vllm_kwargs:
+      max_num_seqs: 32
+  optimizer:
+    kwargs:
+      lr: 3.0e-6
+  scheduler:
+    - name: torch.optim.lr_scheduler.ConstantLR
+      kwargs:
+        factor: 1.0
+        total_iters: 1000000000
+    - milestones: []
+
+teacher:
+  model_name: Qwen/Qwen3-32B
+  tokenizer:
+    name: Qwen/Qwen3-32B
+    chat_template_kwargs:
+      enable_thinking: true
+  train_global_batch_size: 128
+  max_total_sequence_length: 36864
+
+data:
+  train:
+    dataset_name: ResponseDataset
+    data_path: experiments/rocm_opd_dsr/train.jsonl
+    split_validation_size: 0
+  validation:
+    dataset_name: ResponseDataset
+    data_path: experiments/rocm_opd_dsr/validation.jsonl
+    split_validation_size: 0
+    repeat: 1
+  default:
+    prompt_file: null
+    system_prompt_file: null
+    processor: math_hf_data_processor
+    env_name: math
+
+env:
+  math:
+    num_workers: 4
+    math_verify_impl: hf_math_verify
+
+checkpointing:
+  save_period: 25
+  keep_top_k: 6
+
+logger:
+  wandb_enabled: true
+  wandb:
+    id: null
+    project: opd-tests
+    group: nemo-rocm-dsr
+    mode: online
+  tensorboard_enabled: true
+  num_val_samples_to_print: 1
+
+cluster:
+  gpus_per_node: 2

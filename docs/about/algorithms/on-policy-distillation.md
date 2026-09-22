@@ -72,3 +72,21 @@ sbatch \
 
 > [!NOTE]
 > For GB200 systems with 4 GPUs per node, use `--gres=gpu:4` instead.
+
+## Sampled-token reverse KL
+
+Set `loss_fn.kl_type=sampled_reverse` in the standard distillation entrypoint to
+score each student-generated token with the frozen teacher's full-vocabulary
+log-probability. This mode does not use `distillation.topk_logits_k`.
+
+The detached per-token advantage is `teacher_logprob - rollout_logprob`; the loss
+is `-exp(current_logprob - rollout_logprob) * advantage`, masked to response
+tokens. `loss_fn.sampled_token_reduction=mean` normalizes gradients by the global
+valid-token count; `sum` preserves summed token gradients. Reported loss metrics
+remain token means in both modes. Choose the reduction together with the learning
+rate because it changes gradient scale. There is no importance-ratio clipping.
+
+For synchronous on-policy training, use one optimizer update per fresh rollout
+batch and unfiltered temperature-1 sampling. The historical rank-128 LoRA
+SFT/OPD recipe, AMD ROCm launchers, and explicit evaluation assumptions are in
+[`experiments/tml_opd_replication`](../../../experiments/tml_opd_replication/README.md).

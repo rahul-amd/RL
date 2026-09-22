@@ -14,7 +14,8 @@ distillation:
     seed: 42
 
 loss_fn:
-    kl_type: "mixed" # forward, reverse, mixed
+    kl_type: "mixed" # forward, reverse, mixed, sampled_reverse (unclipped sampled-token objective)
+    sampled_token_reduction: mean # mean or sum; used with kl_type=sampled_reverse
     mixed_kl_weight: 0.5 # when kl_type is "mixed", this is the weight of the forward KL
     zero_outside_topk: false # zero out the teacher logits outside the top k when calculate forward KL loss
 

@@ -1,0 +1,100 @@
+{
+  "job": 49408,
+  "purpose": "Two-update, two-GPU full16K LoRA execution smoke; not SFT quality evaluation",
+  "steps": 2,
+  "global_batch": 4,
+  "losses": [
+    1.1041,
+    1.1307
+  ],
+  "step_seconds": [
+    12.47,
+    25.22
+  ],
+  "frozen_base_unchanged": true,
+  "finite_adapters_changed": true,
+  "adapter_tensor_count_per_rank": [
+    506,
+    506
+  ],
+  "tests_passed": 5,
+  "checkpoint_resume_job": 49409,
+  "full_batch_benchmark_job": 49410,
+  "data_preparation_job": 49403,
+  "full_sft_job": 49412,
+  "invalid_smokes": {
+    "49404": "Scheduler config rejected before model load",
+    "49407": "Bare target patterns matched only lm_head; not valid all-layer SFT"
+  },
+  "resume_exact_parameter_restore": true,
+  "resume_completed_step": 3,
+  "continuation_job": 49413,
+  "full_batch_benchmark": {
+    "job": 49410,
+    "gpus": 4,
+    "global_batch": 128,
+    "sequence_length": 16384,
+    "activation_checkpointing": false,
+    "losses": [
+      1.2096,
+      1.2196
+    ],
+    "step_seconds": [
+      105.31,
+      115.66
+    ],
+    "frozen_base_unchanged": true,
+    "finite_adapters_changed": true,
+    "checkpoint_saved": true
+  },
+  "data_preparation_complete": true,
+  "full_run_first_update": {
+    "job": 49412,
+    "step": 1,
+    "mean_nll": 1.2096158153144645,
+    "seconds": 105.04707644693552,
+    "global_batch": 128,
+    "learning_rate": 0.001,
+    "wandb_remote_verified": true
+  },
+  "multinode_benchmark": {
+    "job": 49416,
+    "nodes": 4,
+    "gpus": 32,
+    "dp_replicate_size": 4,
+    "global_batch": 128,
+    "sequence_length": 16384,
+    "losses": [
+      1.2096,
+      1.2192
+    ],
+    "step_seconds": [
+      32.35,
+      45.88
+    ],
+    "training_seconds": [
+      29.57,
+      43.69
+    ],
+    "all_32_rank_audits_passed": true,
+    "replicas_identical_before_and_after": true,
+    "checkpoint_step": 2,
+    "exit_code": 0
+  },
+  "multinode_full_sft_job": 49417,
+  "invalid_multinode_preflights": {
+    "49414": "Allocated30of32 GPUs; srun rejected request before training; also fixed head loopback resolution",
+    "49415": "Ray CLI executable missing; fixed invocation to python module before training"
+  },
+  "multinode_exact_parameter_restore": true,
+  "active_full_sft_job": 49417,
+  "retired_full_sft_job": 49412,
+  "retired_continuation_job": 49413,
+  "multinode_resume_first_update": {
+    "step": 3,
+    "loss": 1.3563014395185746,
+    "seconds": 22.308173950761557,
+    "lr": 0.0009993333333333332,
+    "wandb_remote_verified": true
+  }
+}

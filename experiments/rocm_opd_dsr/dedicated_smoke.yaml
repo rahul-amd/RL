@@ -1,0 +1,20 @@
+defaults: packed_smoke.yaml
+distillation:
+  max_num_steps: 6
+  max_num_epochs: 6
+  topk_logits_k: 20
+policy:
+  generation:
+    colocated:
+      enabled: false
+      resources:
+        num_nodes: 1
+        gpus_per_node: 2
+checkpointing:
+  save_period: 3
+logger:
+  wandb:
+    group: nemo-rocm-dedicated
+    name: nemo-opd-dedicated-smoke
+cluster:
+  gpus_per_node: 4

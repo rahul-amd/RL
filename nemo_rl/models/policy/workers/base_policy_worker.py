@@ -261,16 +261,15 @@ class AbstractPolicyWorker:
         return get_gpu_info(self.model)
 
     def report_device_id(self) -> str:
-        """Report the UUID of the current CUDA device using NVML.
+        """Report the UUID of the current GPU through its device runtime.
 
         Returns:
-            str: UUID of the device in the format "GPU-xxxxx"
+            str: Stable UUID shared by workers using the same device.
         """
         from nemo_rl.utils.nvml import get_device_uuid
 
         # Get current device index from torch
         device_idx = torch.cuda.current_device()
-        # Get device UUID using NVML
         return get_device_uuid(device_idx)
 
     def get_zmq_address(self) -> str:

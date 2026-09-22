@@ -1,0 +1,65 @@
+[
+  {
+    "job_id": 49109,
+    "algorithm": "grpo",
+    "steps": 3,
+    "losses_printed": [
+      -0.0111,
+      0.0,
+      0.0
+    ],
+    "checkpoint": "experiments/rocm_rl/run_49109/checkpoints/step_3",
+    "verified_parameter": "model.layers.0.self_attn.q_proj.weight",
+    "parameter_max_abs_change": 1.6838312149047852e-06,
+    "parameter_mean_abs_change": 1.2170111176601495e-06,
+    "changed_parameter_elements": 4194284,
+    "checkpoint_shards_verified": true,
+    "rollout_checks": [
+      {
+        "step": 1,
+        "responses": 16,
+        "mean_reward": 0.8125,
+        "nonzero_advantage_responses": 4
+      },
+      {
+        "step": 2,
+        "responses": 16,
+        "mean_reward": 1.0,
+        "nonzero_advantage_responses": 0
+      },
+      {
+        "step": 3,
+        "responses": 16,
+        "mean_reward": 1.0,
+        "nonzero_advantage_responses": 0
+      }
+    ],
+    "generation_kl_error_printed": [
+      0.0002,
+      0.0002,
+      0.0002
+    ],
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 182
+  },
+  {
+    "job_id": 49110,
+    "algorithm": "opd",
+    "steps": 3,
+    "losses_printed": [
+      0.073,
+      0.0997,
+      0.0431
+    ],
+    "checkpoint": "experiments/rocm_rl/run_49110/checkpoints/step_3",
+    "verified_parameter": "model.layers.0.self_attn.q_proj.weight",
+    "parameter_max_abs_change": 2.86102294921875e-06,
+    "parameter_mean_abs_change": 2.189363385696197e-06,
+    "changed_parameter_elements": 4193807,
+    "checkpoint_shards_verified": true,
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 231
+  }
+]

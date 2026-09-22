@@ -1258,50 +1258,42 @@ class VllmGeneration(GenerationInterface):
         if not self.cfg["colocated"]["enabled"]:
             return True
 
-        try:
-            # Choose the appropriate method based on async_engine setting
-            method_name = (
-                "wake_up_async" if self.cfg["vllm_cfg"]["async_engine"] else "wake_up"
-            )
-            # Use run_all_workers_single_data for methods that don't need data
-            futures = self.worker_group.run_all_workers_single_data(
-                method_name,
-                run_rank_0_only_axes=["tensor_parallel", "pipeline_parallel"],
-                **kwargs,
-            )
-            # Wait for all futures to complete
-            results = ray.get(futures)
-            return all(result for result in results if result is not None)
-        except Exception as e:
-            print(f"Error during policy preparation: {e}")
-            return False
+        # Choose the appropriate method based on async_engine setting
+        method_name = (
+            "wake_up_async" if self.cfg["vllm_cfg"]["async_engine"] else "wake_up"
+        )
+        # Use run_all_workers_single_data for methods that don't need data
+        futures = self.worker_group.run_all_workers_single_data(
+            method_name,
+            run_rank_0_only_axes=["tensor_parallel", "pipeline_parallel"],
+            **kwargs,
+        )
+        # Wait for all futures to complete
+        results = ray.get(futures)
+        return all(result for result in results if result is not None)
 
     def finish_generation(self, *args: Any, **kwargs: Any) -> bool:
         """Sleep workers and reset prefix cache."""
-        try:
-            # Choose the appropriate method based on setting
-            # non-colocated only needs reset prefix cache, no need to sleep.
-            if self.cfg["colocated"]["enabled"]:
-                method_name = (
-                    "sleep_async" if self.cfg["vllm_cfg"]["async_engine"] else "sleep"
-                )
-            else:
-                method_name = (
-                    "reset_prefix_cache_async"
-                    if self.cfg["vllm_cfg"]["async_engine"]
-                    else "reset_prefix_cache"
-                )
-            # Use run_all_workers_single_data for methods that don't need data
-            futures = self.worker_group.run_all_workers_single_data(
-                method_name,
-                run_rank_0_only_axes=["tensor_parallel", "pipeline_parallel"],
+        # Choose the appropriate method based on setting
+        # non-colocated only needs reset prefix cache, no need to sleep.
+        if self.cfg["colocated"]["enabled"]:
+            method_name = (
+                "sleep_async" if self.cfg["vllm_cfg"]["async_engine"] else "sleep"
             )
-            # Wait for all futures to complete
-            results = ray.get(futures)
-            return all(result for result in results if result is not None)
-        except Exception as e:
-            print(f"Error during policy preparation: {e}")
-            return False
+        else:
+            method_name = (
+                "reset_prefix_cache_async"
+                if self.cfg["vllm_cfg"]["async_engine"]
+                else "reset_prefix_cache"
+            )
+        # Use run_all_workers_single_data for methods that don't need data
+        futures = self.worker_group.run_all_workers_single_data(
+            method_name,
+            run_rank_0_only_axes=["tensor_parallel", "pipeline_parallel"],
+        )
+        # Wait for all futures to complete
+        results = ray.get(futures)
+        return all(result for result in results if result is not None)
 
     def shutdown(self) -> bool:
         """Shut down all vLLM workers and clean up resources."""

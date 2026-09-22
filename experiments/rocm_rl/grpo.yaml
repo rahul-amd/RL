@@ -1,0 +1,60 @@
+defaults: ../../examples/configs/grpo_math_1B.yaml
+grpo:
+  num_prompts_per_step: 4
+  num_generations_per_prompt: 4
+  max_num_steps: 3
+  max_num_epochs: 2
+  val_period: -1
+  val_at_start: false
+  val_at_end: false
+policy:
+  model_name: Qwen/Qwen3-1.7B
+  tokenizer:
+    chat_template_kwargs:
+      enable_thinking: false
+  train_global_batch_size: 16
+  train_micro_batch_size: 1
+  logprob_batch_size: 1
+  max_total_sequence_length: 512
+  refit_buffer_size_gb: 1
+  dtensor_cfg:
+    _v2: false
+    checkpoint:
+      model_save_format: null
+  dynamic_batching:
+    enabled: false
+  sequence_packing:
+    enabled: false
+  generation:
+    max_new_tokens: 256
+    temperature: 1.0
+    vllm_cfg:
+      enable_prefix_caching: false
+      gpu_memory_utilization: 0.3
+      enforce_eager: true
+      enable_vllm_metrics_logger: false
+    vllm_kwargs:
+      max_num_seqs: 16
+  optimizer:
+    kwargs:
+      lr: 0.000005
+checkpointing:
+  save_period: 3
+  keep_top_k: 1
+  metric_name: train:reward
+data:
+  train:
+    _override_: true
+    dataset_name: ResponseDataset
+    data_path: experiments/rocm_rl/train.jsonl
+  validation: null
+  default:
+    prompt_file: null
+    processor: math_hf_data_processor
+    env_name: math
+env:
+  math:
+    num_workers: 1
+logger:
+  monitor_gpus: false
+  num_val_samples_to_print: 2

@@ -1,0 +1,13 @@
+{
+  "sequence_lengths": [
+    113,
+    257,
+    61
+  ],
+  "max_logit_error": 0.013671875,
+  "relative_gradient_error": 0.004879029994781754,
+  "reference_loss": 0.21029578149318695,
+  "packed_loss": 0.21030636131763458,
+  "torch": "2.11.0+rocm7.2",
+  "hip": "7.2.26015"
+}

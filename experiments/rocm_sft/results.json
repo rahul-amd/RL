@@ -1,0 +1,54 @@
+[
+  {
+    "job_id": 49104,
+    "gpus": 1,
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "train_losses_printed": [
+      1.8822,
+      1.0072,
+      0.5922,
+      0.0286,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0,
+      0.0001,
+      0.0
+    ],
+    "validation_losses_printed": [
+      1.7654,
+      0.0001,
+      0.3156
+    ],
+    "final_validation_loss": 0.31564903259277344,
+    "checkpoint": "experiments/rocm_sft/run_49104/checkpoints/step_10",
+    "checkpoint_shards_verified": true
+  },
+  {
+    "job_id": 49105,
+    "gpus": 2,
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "train_losses_printed": [
+      1.8822,
+      1.0112,
+      0.6115,
+      0.0287,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0,
+      0.0001,
+      0.3211
+    ],
+    "validation_losses_printed": [
+      1.7654,
+      0.0001,
+      0.6902
+    ],
+    "final_validation_loss": 0.690155565738678,
+    "checkpoint": "experiments/rocm_sft/run_49105/checkpoints/step_10",
+    "checkpoint_shards_verified": true
+  }
+]

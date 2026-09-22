@@ -1,0 +1,32 @@
+{
+  "reference_commit": "330b73d8d763b0f65bcf04e643cc6f082e002554",
+  "dataset": "open-thoughts/OpenThoughts3-1.2M",
+  "dataset_revision": "61bcf9d4eb38b30295efc2021227a63cc5bb34c8",
+  "dataset_snapshot": "/shared_silo/scratch/hf_cache/hub/datasets--open-thoughts--OpenThoughts3-1.2M/snapshots/61bcf9d4eb38b30295efc2021227a63cc5bb34c8",
+  "model": "Qwen/Qwen3-8B-Base",
+  "model_revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
+  "model_snapshot": "/shared_silo/scratch/hf_cache/hub/models--Qwen--Qwen3-8B-Base/snapshots/49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
+  "tokenized_data": "experiments/tml_opd_replication/data/openthoughts3_seed0",
+  "shuffle_seed": 0,
+  "shuffle_buffer": 384000,
+  "max_prompts": 384000,
+  "max_length": 16384,
+  "batch_size": 128,
+  "updates": 3000,
+  "learning_rate": 0.001,
+  "schedule": "linear, no warmup; lr(step)=0.001*(1-step/3000)",
+  "adam_betas": [0.9, 0.95],
+  "adam_eps": 1e-8,
+  "lora_rank": 128,
+  "lora_alpha": 32,
+  "lora_A_init": "Kaiming uniform with a=sqrt(5)",
+  "lora_B_init": "zero",
+  "lora_targets": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "lm_head"],
+  "local_assumptions": [
+    "Alpha32 and A/B initialization follow the authors' LoRA Without Regret article; original checkpoint export unavailable for verification.",
+    "Dropout0, no gradient clipping and no weight decay; no original backend snapshot available.",
+    "Sum-reduced token loss follows documented Tinker cross_entropy semantics; historical server internals unavailable.",
+    "Local random seed42 for model initialization; historical server seed unspecified.",
+    "HF datasets runtime pinned by existing ROCm overlay, not specified by historical cookbook."
+  ]
+}

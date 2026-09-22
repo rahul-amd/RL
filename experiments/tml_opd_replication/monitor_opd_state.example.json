@@ -1,0 +1,13 @@
+{
+  "status": "watching",
+  "active_job": "YOUR_JOB_ID",
+  "active_gpus": 32,
+  "upgrade_job": null,
+  "checkpoint_step": 0,
+  "completed_step": null,
+  "progress_at": 0,
+  "running_since": null,
+  "restarts_without_progress": 0,
+  "restart_requested": false,
+  "evaluations": {}
+}

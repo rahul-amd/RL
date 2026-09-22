@@ -1,0 +1,19 @@
+defaults: ../rocm_rl/distillation.yaml
+policy:
+  sequence_packing:
+    enabled: true
+    train_mb_tokens: 1024
+    logprob_mb_tokens: 1024
+teacher:
+  sequence_packing:
+    enabled: true
+    train_mb_tokens: 1024
+    logprob_mb_tokens: 1024
+logger:
+  wandb_enabled: true
+  tensorboard_enabled: true
+  wandb:
+    project: opd-tests
+    group: nemo-rocm-packed
+    name: nemo-opd-packed-smoke
+    mode: online

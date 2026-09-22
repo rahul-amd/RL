@@ -9,6 +9,8 @@ These recipes record the AMD MI325X work behind [TM_OPD_RECIPE.md](../TM_OPD_REC
 | [rocm_opd_dsr](rocm_opd_dsr/README.md) | Prime-RL dataset comparison, packing and dedicated inference |
 | [tml_opd_replication](tml_opd_replication/README.md) | Historical LoRA SFT, sampled-token OPD, audits, monitoring and AIME24 evaluation |
 
+Current-branch GPU training, checkpoint and resume checks: [September 22 sanity results](gpu-sanity.md).
+
 ## Tested environment
 
 The full reproduction used NeMo-RL `feff70f5b6239d90dc703ae79b973ea809550732` with the included runtime changes and Automodel `1814c6c93a66b9d59d254960ef6a99a64249b671`. This PR ports those changes onto the fork's newer main; it retains main's Automodel pin. Historical GPU results in the recipe/JSON files describe the original checkout, not a rerun on the newer base.

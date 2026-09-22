@@ -19,6 +19,8 @@ policy:
   refit_buffer_size_gb: 1
   dtensor_cfg:
     _v2: false
+    checkpoint:
+      model_save_format: null
   dynamic_batching:
     enabled: false
   sequence_packing:
@@ -40,7 +42,6 @@ checkpointing:
   save_period: 3
   keep_top_k: 1
   metric_name: train:reward
-  model_save_format: null
 data:
   train:
     _override_: true

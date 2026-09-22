@@ -161,3 +161,13 @@ The TML worker uses synchronous checkpoints; recovery requires complete model,
 optimizer and dataloader state plus the shared run writer lock. Dedicated vLLM
 ranks avoid the observed ROCm sleep/wake allocation failure. Validate transfers
 with `verify_rccl_group.py` before launching distributed OPD on a new stack.
+
+ROCm recipes using `_v2: false` must set
+`policy.dtensor_cfg.checkpoint.model_save_format: null`; the exemplar's
+`safetensors` setting applies to DTensor V2. Do not put `model_save_format` in
+the top-level `checkpointing` block. Experiment worker overrides of
+`_init_checkpoint_manager` must accept only `config_updates` and forward it by
+keyword. The TML override sets `is_async=False` there. Verify both saving and
+resuming in a GPU smoke run when adapting recipes to a newer NeMo/Automodel base.
+For optional W&B fields absent from a smoke config, use Hydra's `++` override
+syntax in launchers (for example `++logger.wandb.id=...`).

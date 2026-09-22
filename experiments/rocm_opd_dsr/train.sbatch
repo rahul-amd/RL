@@ -46,5 +46,5 @@ exec experiments/rocm_rl/container.sh env \
   "cluster.gpus_per_node=$GPU_COUNT" \
   "logger.log_dir=experiments/rocm_opd_dsr/run_${SLURM_JOB_ID}/logs" \
   "logger.wandb.name=nemo-opd-dsr-${SLURM_JOB_ID}" \
-  "logger.wandb.id=nemo-opd-dsr-${SLURM_JOB_ID}" \
+  "++logger.wandb.id=nemo-opd-dsr-${SLURM_JOB_ID}" \
   "checkpointing.checkpoint_dir=experiments/rocm_opd_dsr/run_${SLURM_JOB_ID}/checkpoints" "$@"

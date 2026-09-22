@@ -22,6 +22,8 @@ policy:
   max_total_sequence_length: 512
   dtensor_cfg:
     _v2: false
+    checkpoint:
+      model_save_format: null
     tensor_parallel_size: 1
     context_parallel_size: 1
     activation_checkpointing: false
@@ -62,7 +64,6 @@ checkpointing:
   keep_top_k: 1
   metric_name: train:loss
   higher_is_better: false
-  model_save_format: null
 data:
   train:
     _override_: true

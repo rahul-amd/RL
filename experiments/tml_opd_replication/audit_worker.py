@@ -26,11 +26,11 @@ from nemo_rl.models.policy.workers.dtensor_policy_worker_v2 import (
 
 @ray.remote
 class AuditedSFTWorker(DTensorPolicyWorkerV2Impl):  # pragma: no cover
-    def _init_checkpoint_manager(self, config_updates=None, checkpoint_root=None):
+    def _init_checkpoint_manager(self, config_updates=None) -> None:
         # Process-based async DCP can collide with a port claimed during training.
         updates = dict(config_updates or {})
         updates["is_async"] = False
-        super()._init_checkpoint_manager(updates, checkpoint_root)
+        super()._init_checkpoint_manager(config_updates=updates)
 
     def __init__(self, config, *args, **kwargs):
         torch.manual_seed(config["initialization_seed"])

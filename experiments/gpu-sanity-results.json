@@ -1,0 +1,346 @@
+{
+  "date": "2026-09-22",
+  "base_commit": "e15134149c8686f7363132c161f738cd37bdf320",
+  "automodel_commit": "72daceffa54d77783e1f73a5ac165eb39b6b5ea1",
+  "hardware": "AMD MI325X",
+  "partition": "amd-tw-verification",
+  "qos": "normal",
+  "wandb_group": "pr-amd-sanity",
+  "scope": "Single-node GPU execution, checkpoint save/resume and weight-change checks; not convergence or multi-node validation.",
+  "runs": [
+    {
+      "job_id": 50285,
+      "case": "native_sft",
+      "allocated_gpus": 1,
+      "node": "tus1-p15-g5",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:01:27",
+      "completed_step": 10,
+      "checkpoint": "experiments/rocm_sft/run_50285/checkpoints/step_10",
+      "log": "experiments/rocm_sft/slurm-50285.log",
+      "losses_printed": [
+        1.8822,
+        1.0072,
+        0.5922,
+        0.0286,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0,
+        0.0001,
+        0.0
+      ],
+      "step_seconds": [
+        1.54,
+        0.44,
+        0.44,
+        0.44,
+        13.68,
+        0.44,
+        0.43,
+        0.44,
+        0.46,
+        14.63
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/.metadata",
+        "policy/optimizer/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/0sajexuh"
+      ]
+    },
+    {
+      "job_id": 50286,
+      "case": "grpo",
+      "allocated_gpus": 1,
+      "node": "tus1-p15-g5",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:02:56",
+      "completed_step": 3,
+      "checkpoint": "experiments/rocm_rl/run_50286/checkpoints/step_3",
+      "log": "experiments/rocm_rl/slurm-50286.log",
+      "losses_printed": [
+        -0.0111,
+        0.0,
+        0.0
+      ],
+      "step_seconds": [
+        13.93,
+        10.49,
+        22.68
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/.metadata",
+        "policy/optimizer/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/q5z4h7ap"
+      ]
+    },
+    {
+      "job_id": 50287,
+      "case": "topk_opd",
+      "allocated_gpus": 1,
+      "node": "tus1-p15-g5",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:03:28",
+      "completed_step": 3,
+      "checkpoint": "experiments/rocm_rl/run_50287/checkpoints/step_3",
+      "log": "experiments/rocm_rl/slurm-50287.log",
+      "losses_printed": [
+        0.073,
+        0.0997,
+        0.0431
+      ],
+      "step_seconds": [
+        12.46,
+        10.24,
+        22.54
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/.metadata",
+        "policy/optimizer/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/37nxdibe"
+      ]
+    },
+    {
+      "job_id": 50288,
+      "case": "packed_lora_sft",
+      "allocated_gpus": 2,
+      "node": "tus1-p15-g5",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:02:20",
+      "completed_step": 2,
+      "checkpoint": "experiments/tml_opd_replication/run_50288/checkpoints/step_2",
+      "log": "experiments/tml_opd_replication/sft-50288.log",
+      "losses_printed": [
+        1.1041,
+        1.1299
+      ],
+      "step_seconds": [
+        11.64,
+        10.67
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/model/adapter_model.safetensors",
+        "policy/optimizer/optim/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/tml-sft-r128-50288"
+      ],
+      "frozen_base_finite_changed_adapter_audit": true
+    },
+    {
+      "job_id": 50290,
+      "case": "packed_lora_sft_resume",
+      "allocated_gpus": 2,
+      "node": "tus1-p15-g5",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:02:12",
+      "completed_step": 3,
+      "checkpoint": "experiments/tml_opd_replication/run_50288/checkpoints/step_3",
+      "log": "experiments/tml_opd_replication/sft-50290.log",
+      "losses_printed": [
+        1.4011
+      ],
+      "step_seconds": [
+        13.03
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/model/adapter_model.safetensors",
+        "policy/optimizer/optim/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/tml-sft-r128-50288"
+      ],
+      "frozen_base_finite_changed_adapter_audit": true,
+      "exact_parameter_restore_audit": true
+    },
+    {
+      "job_id": 50289,
+      "case": "sampled_lora_opd",
+      "allocated_gpus": 4,
+      "node": "tus1-p15-g48",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:04:58",
+      "completed_step": 2,
+      "checkpoint": "experiments/tml_opd_replication/run_opd_50289/checkpoints/step_2",
+      "log": "experiments/tml_opd_replication/opd-50289.log",
+      "losses_printed": [
+        0.3685,
+        0.3506
+      ],
+      "step_seconds": [
+        24.32,
+        17.71
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/model/adapter_model.safetensors",
+        "policy/optimizer/optim/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/tml-opd-50289"
+      ],
+      "frozen_base_finite_changed_adapter_audit": true,
+      "initial_adapter_tensors_verified_per_rank": 506
+    },
+    {
+      "job_id": 50295,
+      "case": "sampled_lora_opd_resume",
+      "allocated_gpus": 4,
+      "node": "tus1-p15-g63",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:04:51",
+      "completed_step": 3,
+      "checkpoint": "experiments/tml_opd_replication/run_opd_50289/checkpoints/step_3",
+      "log": "experiments/tml_opd_replication/opd-50295.log",
+      "losses_printed": [
+        0.2893
+      ],
+      "step_seconds": [
+        30.44
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/model/adapter_model.safetensors",
+        "policy/optimizer/optim/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/tml-opd-50289"
+      ],
+      "frozen_base_finite_changed_adapter_audit": true,
+      "exact_parameter_restore_audit": true
+    },
+    {
+      "job_id": 50294,
+      "case": "packed_topk_opd",
+      "allocated_gpus": 4,
+      "node": "tus1-p15-g5",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:03:50",
+      "completed_step": 6,
+      "checkpoint": "experiments/rocm_opd_dsr/run_50294/checkpoints/step_6",
+      "log": "experiments/rocm_opd_dsr/slurm-50294.log",
+      "losses_printed": [
+        0.052,
+        0.0754,
+        0.0606,
+        0.0965,
+        0.0273,
+        0.0723
+      ],
+      "step_seconds": [
+        10.9,
+        7.41,
+        14.99,
+        6.71,
+        6.4,
+        14.24
+      ],
+      "checkpoint_files_verified": [
+        "config.yaml",
+        "train_dataloader.pt",
+        "training_info.json",
+        "policy/weights/.metadata",
+        "policy/optimizer/.metadata"
+      ],
+      "wandb_urls": [
+        "https://wandb.ai/rahular/opd-tests/runs/nemo-opd-dsr-50294"
+      ]
+    }
+  ],
+  "rccl": {
+    "job_id": 50279,
+    "gpus": 2,
+    "result": "8 broadcasts per rank (FP32/BF16, rotating roots, separate stream), repeated abort and post-abort rejection passed"
+  },
+  "native_checkpoint_parameter_audits": [
+    {
+      "algorithm": "sft",
+      "checkpoint": "experiments/rocm_sft/run_50285/checkpoints/step_10",
+      "parameter": "model.layers.0.self_attn.q_proj.weight",
+      "max_abs_change": 0.0003607310354709625,
+      "mean_abs_change": 4.406134394230321e-05,
+      "changed_elements": 4194170,
+      "finite": true,
+      "completed_steps": 10
+    },
+    {
+      "algorithm": "grpo",
+      "checkpoint": "experiments/rocm_rl/run_50286/checkpoints/step_3",
+      "parameter": "model.layers.0.self_attn.q_proj.weight",
+      "max_abs_change": 1.6838312149047852e-06,
+      "mean_abs_change": 1.2170111176601495e-06,
+      "changed_elements": 4194284,
+      "finite": true,
+      "completed_steps": 3
+    },
+    {
+      "algorithm": "topk_opd",
+      "checkpoint": "experiments/rocm_rl/run_50287/checkpoints/step_3",
+      "parameter": "model.layers.0.self_attn.q_proj.weight",
+      "max_abs_change": 2.86102294921875e-06,
+      "mean_abs_change": 2.189363385696197e-06,
+      "changed_elements": 4193807,
+      "finite": true,
+      "completed_steps": 3
+    },
+    {
+      "algorithm": "packed_topk_opd",
+      "checkpoint": "experiments/rocm_opd_dsr/run_50294/checkpoints/step_6",
+      "parameter": "model.layers.0.self_attn.q_proj.weight",
+      "max_abs_change": 9.812414646148682e-06,
+      "mean_abs_change": 6.279223271121737e-06,
+      "changed_elements": 4194068,
+      "finite": true,
+      "completed_steps": 6
+    }
+  ],
+  "tested_source_sha256": {
+    "experiments/rocm_opd_dsr/train.sbatch": "7133c58a35c506218662d7848d32614f0e55d4c8219468b5ddcb426c6cbf0771",
+    "experiments/rocm_rl/distillation.yaml": "fa44752cf7b8fc1ebb62c06888c73d50956cd56ef6f5d583557efa4a2db3b9a2",
+    "experiments/rocm_rl/grpo.yaml": "0ffb5edf1cea5553e9e17081361818123a7e42a291165ba1ec34bb21f7ddb5f2",
+    "experiments/rocm_sft/sft.yaml": "102108845b98b81512ac88e16b19251b2fdc9a190de74749a376ac21c84a2026",
+    "experiments/tml_opd_replication/audit_worker.py": "aab6b3957813a26e064ee36dddec6ad6f6befd31c3fa6815402128e0d88184bf",
+    "nemo_rl/distributed/stateless_process_group.py": "8321f1c70dcc2b13867bc96c085468b0e1351606220fb0309a2544e85832e508",
+    "nemo_rl/algorithms/distillation.py": "3df3d7e71d428031ad92ff9711338c756c224709449c0f3e9d618d8096cf6dac",
+    "nemo_rl/algorithms/loss/loss_functions.py": "7a953276c46eb959d14d5ebf34638c1492ebcbf9bdf8f2934a744e3ea0ea06a1",
+    "nemo_rl/models/policy/workers/dtensor_policy_worker_v2.py": "1068849d8fe7a2e0c67eaf475c8ee85ea4a74c2998ff5514ef5319f9450c030b"
+  },
+  "fixes": [
+    "Set DTensor V1 checkpoint format to null in policy.dtensor_cfg.checkpoint; remove unsupported top-level model_save_format.",
+    "Match current DTensor V2 checkpoint-manager signature while retaining synchronous saves.",
+    "Allow the dedicated smoke launcher to add an absent W&B run ID using ++."
+  ]
+}
